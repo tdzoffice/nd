@@ -35,6 +35,7 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         view.addSubview(tableView)
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.disableCellReuse()
     }
     
     func setupGestureRecognizers() {
