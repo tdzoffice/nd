@@ -1,6 +1,13 @@
+//
+//  Backup.swift
+//  Drawer Menu App
+//
+//  Created by MAC on 06/10/2023.
+//
+
 import UIKit
 
-class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class Backup: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     let transitionManager = DrawerTransitionManager()
     let drawerWidth: CGFloat = UIScreen.main.bounds.width * 0.8 // Set the width to 75% of the screen width
@@ -144,6 +151,12 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
             // Sub-menu item
             cell.textLabel?.text = "\t" + menuItem.text
             cell.imageView?.image = menuItem.image
+            
+            if menuItem.text == "Settings" || menuItem.text == "Contact" {
+                cell.accessoryType = .disclosureIndicator
+            } else {
+                cell.accessoryType = .none
+            }
         } else {
             // Menu item
             cell.textLabel?.text = menuItem.text
