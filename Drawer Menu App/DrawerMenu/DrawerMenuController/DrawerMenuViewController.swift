@@ -1,10 +1,3 @@
-//
-//  DrawerMenuViewController.swift
-//  Drawer Menu App
-//
-//  Created by Artem Korzh on 26.09.2020.
-//
-
 import UIKit
 
 class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
@@ -17,11 +10,11 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         modalPresentationStyle = .custom
         transitioningDelegate = transitionManager
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     let tableView = UITableView()
     let menuItems = ["Profile", "Settings"]
     var subMenuItems: [String] = []
@@ -41,50 +34,43 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
-        // Add a pan gesture recognizer to the tableView
-                let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-                tableView.addGestureRecognizer(panGesture)
+        
     }
     
     func setupGestureRecognizers() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        view.addGestureRecognizer(tapGesture)
+        
+        
+        // Add a pan gesture recognizer to the tableView
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        tableView.addGestureRecognizer(panGesture)
     }
     
-    @objc func handleTap(_ sender: UITapGestureRecognizer) {
-        if sender.state == .ended {
-            // Check if the tap is outside the drawer area, then close the drawer
-            let location = sender.location(in: view)
-            if location.x > drawerWidth {
-                dismiss(animated: true, completion: nil)
-            }
-        }
-    }
+    
     
     @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
-            let translation = gesture.translation(in: view)
-            
-            switch gesture.state {
-            case .changed:
-                // Check if the user is dragging the tableView from the left edge
-                if translation.x > 0 && translation.x <= 50 {
-                    let width = drawerWidth - translation.x
-                    tableView.frame = CGRect(x: 0, y: 0, width: width, height: view.bounds.height)
-                }
-            case .ended:
-                // If the user released the drag within a certain threshold, close the drawer
-                if translation.x <= 50 {
-                    dismiss(animated: true, completion: nil)
-                } else {
-                    // Snap back to the fully open drawer
-                    UIView.animate(withDuration: 0.2) {
-                        self.tableView.frame = CGRect(x: 0, y: 0, width: self.drawerWidth, height: self.view.bounds.height)
-                    }
-                }
-            default:
-                break
+        let translation = gesture.translation(in: view)
+        
+        switch gesture.state {
+        case .changed:
+            // Check if the user is dragging the tableView from the left edge
+            if translation.x > 0 && translation.x <= 50 {
+                let width = drawerWidth - translation.x
+                tableView.frame = CGRect(x: 0, y: 0, width: width, height: view.bounds.height)
             }
+        case .ended:
+            // If the user released the drag within a certain threshold, close the drawer
+            if translation.x <= 50 {
+                dismiss(animated: true, completion: nil)
+            } else {
+                // Snap back to the fully open drawer
+                UIView.animate(withDuration: 0.2) {
+                    self.tableView.frame = CGRect(x: 0, y: 0, width: self.drawerWidth, height: self.view.bounds.height)
+                }
+            }
+        default:
+            break
         }
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return menuItems.count
@@ -115,9 +101,11 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
             switch indexPath.row {
             case 0:
                 // Navigate to Profile page
+                print("Profile")
                 break
             case 1:
                 // Show subMenuItems = ["Language", "Theme"]
+                print("Settings")
                 break
             default:
                 break

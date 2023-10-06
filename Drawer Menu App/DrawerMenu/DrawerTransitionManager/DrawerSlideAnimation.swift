@@ -4,7 +4,6 @@
 //
 //  Created by Artem Korzh on 26.09.2020.
 //
-
 import UIKit
 
 class DrawerSlideAnimation: NSObject, UIViewControllerAnimatedTransitioning {
