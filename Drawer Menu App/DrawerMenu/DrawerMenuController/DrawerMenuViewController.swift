@@ -16,9 +16,23 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     let tableView = UITableView()
-    let menuItems = ["Profile", "Settings", "Contact", "Logout"]
+    var menuItems: [String] = ["Profile", "Settings", "Contact", "Logout"]
     var subMenuItems: [[String]] = [["Language", "Theme"], ["Phone", "Email", "Address"]]
-    var isSubMenuVisible = Array(repeating: false, count: 2)
+    var isSubMenuVisible: [Bool] = Array(repeating: false, count: 2)
+    
+    // Represent the current menu structure based on visibility
+    var currentMenu: [String] {
+        var updatedMenu: [String] = []
+        for (index, item) in menuItems.enumerated() {
+            updatedMenu.append(item)
+            if item == "Settings" && isSubMenuVisible[0] {
+                updatedMenu += subMenuItems[0]
+            } else if item == "Contact" && isSubMenuVisible[1] {
+                updatedMenu += subMenuItems[1]
+            }
+        }
+        return updatedMenu
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,9 +47,6 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         tableView.separatorStyle = .none
         tableView.frame = CGRect(x: 0, y: 0, width: drawerWidth, height: view.bounds.height)
         view.addSubview(tableView)
-        
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        tableView.disableCellReuse()
     }
     
     func setupGestureRecognizers() {
@@ -70,103 +81,48 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var count = menuItems.count
-        for (index, isVisible) in isSubMenuVisible.enumerated() {
-            if isVisible {
-                count += subMenuItems[index].count
-            }
-        }
-        return count
+        return currentMenu.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        let menuItem = currentMenu[indexPath.row]
         
-        var adjustedIndex = indexPath.row
-        for (index, isVisible) in isSubMenuVisible.enumerated() {
-            if isVisible {
-                let subMenuCount = subMenuItems[index].count
-                if adjustedIndex < subMenuCount {
-                    cell.textLabel?.text = "  " + subMenuItems[index][adjustedIndex]
-                    return cell
-                }
-                adjustedIndex -= subMenuCount
+        if menuItem.hasPrefix("  ") {
+            // Sub-menu item
+            cell.textLabel?.text = "  " + menuItem
+        } else {
+            // Menu item
+            cell.textLabel?.text = menuItem
+            if menuItem == "Settings" || menuItem == "Contact" {
+                cell.accessoryType = .disclosureIndicator
+            } else {
+                cell.accessoryType = .none
             }
         }
-        
-        if adjustedIndex < menuItems.count {
-            cell.textLabel?.text = menuItems[adjustedIndex]
-        }
-        
-        cell.accessoryType = .none
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        let selectedItem = currentMenu[indexPath.row]
         
-        var adjustedIndex = indexPath.row
-        for (index, isVisible) in isSubMenuVisible.enumerated() {
-            if isVisible {
-                let subMenuCount = subMenuItems[index].count
-                if adjustedIndex < subMenuCount {
-                    // Handle sub-menu item click
-                    let subMenuItem = subMenuItems[index][adjustedIndex]
-                    print(subMenuItem)
-                    return
-                }
-                adjustedIndex -= subMenuCount
-            }
-        }
-        
-        if adjustedIndex < menuItems.count {
-            // Handle menu item click
-            let menuItem = menuItems[adjustedIndex]
-            print(menuItem)
-            
-            if adjustedIndex == 1 {
-                // Toggle sub-menu visibility for "Settings"
-                isSubMenuVisible[0].toggle()
-                isSubMenuVisible[1] = false
-                tableView.reloadData()
-            } else if adjustedIndex == 2 {
-                // Toggle sub-menu visibility for "Contact"
-                isSubMenuVisible[1].toggle()
-                isSubMenuVisible[0] = false
-                tableView.reloadData()
-            }
+        if selectedItem.hasPrefix("  ") {
+            // Handle sub-menu item click
+            print(selectedItem.trimmingCharacters(in: .whitespaces))
+        } else if selectedItem == "Settings" {
+            // Toggle sub-menu visibility for "Settings"
+            isSubMenuVisible[0].toggle()
+            tableView.reloadData()
+        } else if selectedItem == "Contact" {
+            // Toggle sub-menu visibility for "Contact"
+            isSubMenuVisible[1].toggle()
+            tableView.reloadData()
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 44
     }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        var adjustedIndex = indexPath.row
-        for (index, isVisible) in isSubMenuVisible.enumerated() {
-            if isVisible {
-                let subMenuCount = subMenuItems[index].count
-                if adjustedIndex < subMenuCount {
-                    // Sub-menu item
-                    cell.textLabel?.text = "  " + subMenuItems[index][adjustedIndex]
-                    return
-                }
-                adjustedIndex -= subMenuCount
-            }
-        }
-        
-        if adjustedIndex < menuItems.count {
-            // Menu item
-            cell.textLabel?.text = menuItems[adjustedIndex]
-            if adjustedIndex == 1 || adjustedIndex == 2 {
-                // Show ">" indicator for "Settings" and "Contact"
-                cell.accessoryType = .disclosureIndicator
-            } else {
-                cell.accessoryType = .none
-            }
-        }
-    }
 }
-
