@@ -1,5 +1,10 @@
 import UIKit
 
+struct MenuItem {
+    let text: String
+    let image: UIImage?
+}
+
 class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     let transitionManager = DrawerTransitionManager()
@@ -17,18 +22,23 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     
     let scrollView = UIScrollView()
     let tableView = UITableView()
-    var menuItems: [String] = ["BEGIN", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "END"]
-    var subMenuItems: [[String]] = [[" Language", " Theme"], [" Phone", " Email", " Address"]]
+    
+    var menuItems: [MenuItem] = []
+    var subMenuItems: [[MenuItem]] = []
     var isSubMenuVisible: [Bool] = Array(repeating: false, count: 2)
     
+    var menuItemsImg: [String] = ["BEGIN", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "END"]
+    
+    var subMenuItemsImg: [[String]] = [[" Language", " Theme"], [" Phone", " Email", " Address"]]
+    
     // Represent the current menu structure based on visibility
-    var currentMenu: [String] {
-        var updatedMenu: [String] = []
+    var currentMenu: [MenuItem] {
+        var updatedMenu: [MenuItem] = []
         for (index, item) in menuItems.enumerated() {
             updatedMenu.append(item)
-            if item == "Settings" && isSubMenuVisible[0] {
+            if item.text == "Settings" && isSubMenuVisible[0] {
                 updatedMenu += subMenuItems[0]
-            } else if item == "Contact" && isSubMenuVisible[1] {
+            } else if item.text == "Contact" && isSubMenuVisible[1] {
                 updatedMenu += subMenuItems[1]
             }
         }
@@ -38,9 +48,18 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setupMenuItems()
         setupScrollView()
         setupTableView()
         //setupGestureRecognizers()
+    }
+    
+    func setupMenuItems() {
+        // Populate menuItems with text and corresponding images
+        menuItems = menuItemsImg.map { MenuItem(text: $0, image: UIImage(named: $0)) }
+        
+        // Populate subMenuItems with text and corresponding images
+        subMenuItems = subMenuItemsImg.map { $0.map { MenuItem(text: $0, image: UIImage(named: $0)) } }
     }
     
     func setupScrollView() {
@@ -102,13 +121,16 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         let menuItem = currentMenu[indexPath.row]
         
-        if menuItem.hasPrefix(" ") {
+        if menuItem.text.hasPrefix(" ") {
             // Sub-menu item
-            cell.textLabel?.text = "\t" + menuItem
+            cell.textLabel?.text = "\t" + "menuItem.text"
+            cell.imageView?.image = nil
+            
         } else {
             // Menu item
-            cell.textLabel?.text = menuItem
-            if menuItem == "Settings" || menuItem == "Contact" {
+            cell.textLabel?.text = menuItem.text
+            cell.imageView?.image = UIImage(systemName: "chevron.right.circle.fill")
+            if menuItem.text == "Settings" || menuItem.text == "Contact" {
                 cell.accessoryType = .disclosureIndicator
             } else {
                 cell.accessoryType = .none
@@ -122,14 +144,14 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         tableView.deselectRow(at: indexPath, animated: true)
         let selectedItem = currentMenu[indexPath.row]
         
-        if selectedItem.hasPrefix("  ") {
+        if selectedItem.text.hasPrefix("  ") {
             // Handle sub-menu item click
-            print(selectedItem.trimmingCharacters(in: .whitespaces))
-        } else if selectedItem == "Settings" {
+            print(selectedItem.text.trimmingCharacters(in: .whitespaces))
+        } else if selectedItem.text == "Settings" {
             // Toggle sub-menu visibility for "Settings"
             isSubMenuVisible[0].toggle()
             tableView.reloadData()
-        } else if selectedItem == "Contact" {
+        } else if selectedItem.text == "Contact" {
             // Toggle sub-menu visibility for "Contact"
             isSubMenuVisible[1].toggle()
             tableView.reloadData()
