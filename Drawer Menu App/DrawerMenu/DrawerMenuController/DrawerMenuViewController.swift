@@ -139,11 +139,13 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         let menuItem = currentMenu[indexPath.row]
-        
+
         if menuItem.text.hasPrefix(" ") {
             // Sub-menu item
             cell.textLabel?.text = "\t" + menuItem.text
             cell.imageView?.image = menuItem.image
+            // Disable accessory type for sub-menu items
+            cell.accessoryType = .none
         } else {
             // Menu item
             cell.textLabel?.text = menuItem.text
@@ -154,13 +156,10 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
                 cell.accessoryType = .none
             }
         }
-        
-        if let image = menuItem.image {
-            cell.imageView?.image = image
-        }
-        
+
         return cell
     }
+
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
