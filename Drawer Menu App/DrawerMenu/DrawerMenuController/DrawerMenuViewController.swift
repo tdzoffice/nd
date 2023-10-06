@@ -15,26 +15,51 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         fatalError("init(coder:) has not been implemented")
     }
     
+    let scrollView = UIScrollView()
     let tableView = UITableView()
-    var menuItems: [String] = ["Profile", "Settings", "Contact", "Logout"]
-    var subMenuItems: [[String]] = [["&Language", "&Theme"], ["&Phone", "&Email", "&Address"]]
+    var menuItems: [String] = ["BEGIN", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "Logout","Profile", "Settings", "Contact", "END"]
+    var subMenuItems: [[String]] = [[" Language", " Theme"], [" Phone", " Email", " Address"]]
     var isSubMenuVisible: [Bool] = Array(repeating: false, count: 2)
+    
+    // Represent the current menu structure based on visibility
+    var currentMenu: [String] {
+        var updatedMenu: [String] = []
+        for (index, item) in menuItems.enumerated() {
+            updatedMenu.append(item)
+            if item == "Settings" && isSubMenuVisible[0] {
+                updatedMenu += subMenuItems[0]
+            } else if item == "Contact" && isSubMenuVisible[1] {
+                updatedMenu += subMenuItems[1]
+            }
+        }
+        return updatedMenu
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setupScrollView()
         setupTableView()
-        setupGestureRecognizers()
+        //setupGestureRecognizers()
+    }
+    
+    func setupScrollView() {
+        scrollView.frame = view.bounds
+        scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(scrollView)
     }
     
     func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.frame = CGRect(x: 0, y: 0, width: drawerWidth, height: view.bounds.height)
-        view.addSubview(tableView)
+        tableView.frame = CGRect(x: 0, y: 0, width: drawerWidth, height: min(CGFloat(currentMenu.count) * 44.0, scrollView.bounds.height))
+        scrollView.addSubview(tableView)
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        
+        // Set the content size of the scrollView to match the tableView's frame
+        scrollView.contentSize = tableView.frame.size
     }
     
     func setupGestureRecognizers() {
@@ -47,16 +72,21 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         
         switch gesture.state {
         case .changed:
+            // Check if the user is dragging the tableView from the left edge
             if translation.x > 0 && translation.x <= 50 {
                 let width = drawerWidth - translation.x
-                tableView.frame = CGRect(x: 0, y: 0, width: width, height: view.bounds.height)
+                tableView.frame = CGRect(x: 0, y: 0, width: width, height: min(CGFloat(currentMenu.count) * 44.0, scrollView.bounds.height))
+                scrollView.contentSize = tableView.frame.size
             }
         case .ended:
+            // If the user released the drag within a certain threshold, close the drawer
             if translation.x <= 50 {
                 dismiss(animated: true, completion: nil)
             } else {
+                // Snap back to the fully open drawer
                 UIView.animate(withDuration: 0.2) {
-                    self.tableView.frame = CGRect(x: 0, y: 0, width: self.drawerWidth, height: self.view.bounds.height)
+                    self.tableView.frame = CGRect(x: 0, y: 0, width: self.drawerWidth, height: min(CGFloat(self.currentMenu.count) * 44.0, self.scrollView.bounds.height))
+                    self.scrollView.contentSize = self.tableView.frame.size
                 }
             }
         default:
@@ -72,12 +102,17 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         let menuItem = currentMenu[indexPath.row]
         
-        if menuItem.hasPrefix("&") {
+        if menuItem.hasPrefix(" ") {
             // Sub-menu item
-            configureSubMenuCell(cell, for: menuItem)
+            cell.textLabel?.text = "\t" + menuItem
         } else {
             // Menu item
-            configureMenuCell(cell, for: menuItem)
+            cell.textLabel?.text = menuItem
+            if menuItem == "Settings" || menuItem == "Contact" {
+                cell.accessoryType = .disclosureIndicator
+            } else {
+                cell.accessoryType = .none
+            }
         }
         
         return cell
@@ -92,47 +127,13 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
             print(selectedItem.trimmingCharacters(in: .whitespaces))
         } else if selectedItem == "Settings" {
             // Toggle sub-menu visibility for "Settings"
-            toggleSubMenu(0)
+            isSubMenuVisible[0].toggle()
+            tableView.reloadData()
         } else if selectedItem == "Contact" {
             // Toggle sub-menu visibility for "Contact"
-            toggleSubMenu(1)
+            isSubMenuVisible[1].toggle()
+            tableView.reloadData()
         }
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 44
-    }
-    
-    // Helper functions
-    
-    private func configureSubMenuCell(_ cell: UITableViewCell, for menuItem: String) {
-        cell.textLabel?.text = "  " + menuItem
-        cell.accessoryType = .none
-    }
-    
-    private func configureMenuCell(_ cell: UITableViewCell, for menuItem: String) {
-        cell.textLabel?.text = menuItem
-        cell.accessoryType = menuItem == "Settings" || menuItem == "Contact" ? .disclosureIndicator : .none
-    }
-    
-    private func toggleSubMenu(_ index: Int) {
-        for i in 0..<isSubMenuVisible.count {
-            isSubMenuVisible[i] = i == index
-        }
-        tableView.reloadData()
-    }
-    
-    private var currentMenu: [String] {
-        var updatedMenu: [String] = []
-        for (index, item) in menuItems.enumerated() {
-            updatedMenu.append(item)
-            if item == "Settings" && isSubMenuVisible[0] {
-                updatedMenu += subMenuItems[0]
-            } else if item == "Contact" && isSubMenuVisible[1] {
-                updatedMenu += subMenuItems[1]
-            }
-        }
-        return updatedMenu
     }
 }
 
