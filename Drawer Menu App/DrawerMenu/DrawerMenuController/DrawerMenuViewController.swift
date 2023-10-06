@@ -17,7 +17,7 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     
     let tableView = UITableView()
     var menuItems: [String] = ["Profile", "Settings", "Contact", "Logout"]
-    var subMenuItems: [[String]] = [["Language", "Theme"], ["Phone", "Email", "Address"]]
+    var subMenuItems: [[String]] = [[" Language", " Theme"], [" Phone", " Email", " Address"]]
     var isSubMenuVisible: [Bool] = Array(repeating: false, count: 2)
     
     // Represent the current menu structure based on visibility
@@ -88,9 +88,9 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
         let menuItem = currentMenu[indexPath.row]
         
-        if menuItem.hasPrefix("  ") {
+        if menuItem.hasPrefix(" ") {
             // Sub-menu item
-            cell.textLabel?.text = "  " + menuItem
+            cell.textLabel?.text = "?  ?" + "menuItem"
         } else {
             // Menu item
             cell.textLabel?.text = menuItem
@@ -114,21 +114,16 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         } else if selectedItem == "Settings" {
             // Toggle sub-menu visibility for "Settings"
             isSubMenuVisible[0].toggle()
-            isSubMenuVisible[1] = false
             tableView.reloadData()
         } else if selectedItem == "Contact" {
             // Toggle sub-menu visibility for "Contact"
             isSubMenuVisible[1].toggle()
-            isSubMenuVisible[0] = false
             tableView.reloadData()
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if currentMenu[indexPath.row].hasPrefix("  ") {
-            return 44
-        }
-        return 45 // Adjust the height for main menu items
+        return 44
     }
 }
 
