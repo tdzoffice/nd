@@ -16,9 +16,9 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     let tableView = UITableView()
-    let menuItems = ["Profile", "Settings"]
-    var subMenuItems: [String] = ["Language","Theme"]
-    var isSubMenuVisible = false
+    let menuItems = ["Profile", "Settings", "Contact", "Logout"]
+    var subMenuItems: [[String]] = [["Language", "Theme"], ["Phone", "Email", "Address"]]
+    var isSubMenuVisible = Array(repeating: false, count: 2)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,22 +69,35 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return isSubMenuVisible ? menuItems.count + subMenuItems.count : menuItems.count
+        var count = menuItems.count
+        for (index, isVisible) in isSubMenuVisible.enumerated() {
+            if isVisible {
+                count += subMenuItems[index].count
+            }
+        }
+        return count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        if indexPath.row < menuItems.count {
-            cell.textLabel?.text = menuItems[indexPath.row]
-        } else {
-            cell.textLabel?.text = subMenuItems[indexPath.row - menuItems.count]
+        
+        var adjustedIndex = indexPath.row
+        for (index, isVisible) in isSubMenuVisible.enumerated() {
+            if isVisible {
+                let subMenuCount = subMenuItems[index].count
+                if adjustedIndex < subMenuCount {
+                    cell.textLabel?.text = "  " + subMenuItems[index][adjustedIndex]
+                    return cell
+                }
+                adjustedIndex -= subMenuCount
+            }
         }
         
-        if indexPath.row == 1 {
-            cell.accessoryType = isSubMenuVisible ? .disclosureIndicator : .none
-        } else {
-            cell.accessoryType = .none
+        if adjustedIndex < menuItems.count {
+            cell.textLabel?.text = menuItems[adjustedIndex]
         }
+        
+        cell.accessoryType = .none
         
         return cell
     }
@@ -92,28 +105,35 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        if indexPath.row == 1 {
-            // User clicked "Settings," show or hide sub-menu items
-            isSubMenuVisible.toggle()
-            tableView.reloadData()
-        } else {
-            // Handle navigation or sub-menu item click
-            if isSubMenuVisible {
-                switch indexPath.row {
-                case 0:
-                    print("Language")
-                case 1:
-                    print("Theme")
-                default:
-                    break
+        var adjustedIndex = indexPath.row
+        for (index, isVisible) in isSubMenuVisible.enumerated() {
+            if isVisible {
+                let subMenuCount = subMenuItems[index].count
+                if adjustedIndex < subMenuCount {
+                    // Handle sub-menu item click
+                    let subMenuItem = subMenuItems[index][adjustedIndex]
+                    print(subMenuItem)
+                    return
                 }
-            } else {
-                switch indexPath.row {
-                case 0:
-                    print("Profile")
-                default:
-                    break
-                }
+                adjustedIndex -= subMenuCount
+            }
+        }
+        
+        if adjustedIndex < menuItems.count {
+            // Handle menu item click
+            let menuItem = menuItems[adjustedIndex]
+            print(menuItem)
+            
+            if adjustedIndex == 1 {
+                // Toggle sub-menu visibility for "Settings"
+                isSubMenuVisible[0].toggle()
+                isSubMenuVisible[1] = false
+                tableView.reloadData()
+            } else if adjustedIndex == 2 {
+                // Toggle sub-menu visibility for "Contact"
+                isSubMenuVisible[1].toggle()
+                isSubMenuVisible[0] = false
+                tableView.reloadData()
             }
         }
     }
@@ -123,9 +143,28 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == 1 {
-            cell.textLabel?.text = isSubMenuVisible ? "Settings" : "Settings"
-            cell.accessoryType = isSubMenuVisible ? .disclosureIndicator : .none
+        var adjustedIndex = indexPath.row
+        for (index, isVisible) in isSubMenuVisible.enumerated() {
+            if isVisible {
+                let subMenuCount = subMenuItems[index].count
+                if adjustedIndex < subMenuCount {
+                    // Sub-menu item
+                    cell.textLabel?.text = "  " + subMenuItems[index][adjustedIndex]
+                    return
+                }
+                adjustedIndex -= subMenuCount
+            }
+        }
+        
+        if adjustedIndex < menuItems.count {
+            // Menu item
+            cell.textLabel?.text = menuItems[adjustedIndex]
+            if adjustedIndex == 1 || adjustedIndex == 2 {
+                // Show ">" indicator for "Settings" and "Contact"
+                cell.accessoryType = .disclosureIndicator
+            } else {
+                cell.accessoryType = .none
+            }
         }
     }
 }
