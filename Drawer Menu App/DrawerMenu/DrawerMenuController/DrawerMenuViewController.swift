@@ -17,7 +17,8 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     
     let tableView = UITableView()
     let menuItems = ["Profile", "Settings"]
-    var subMenuItems: [String] = []
+    var subMenuItems: [String] = ["Language","Theme"]
+    var isSubMenuVisible = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,23 +30,18 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.separatorStyle = .none
         tableView.frame = CGRect(x: 0, y: 0, width: drawerWidth, height: view.bounds.height)
         view.addSubview(tableView)
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        
-        
     }
     
     func setupGestureRecognizers() {
-        
-        
         // Add a pan gesture recognizer to the tableView
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
         tableView.addGestureRecognizer(panGesture)
     }
-    
-    
     
     @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: view)
@@ -73,15 +69,19 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return menuItems.count
+        return isSubMenuVisible ? menuItems.count + subMenuItems.count : menuItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = menuItems[indexPath.row]
+        if indexPath.row < menuItems.count {
+            cell.textLabel?.text = menuItems[indexPath.row]
+        } else {
+            cell.textLabel?.text = subMenuItems[indexPath.row - menuItems.count]
+        }
         
         if indexPath.row == 1 {
-            cell.accessoryType = .disclosureIndicator
+            cell.accessoryType = isSubMenuVisible ? .disclosureIndicator : .none
         } else {
             cell.accessoryType = .none
         }
@@ -93,37 +93,40 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         tableView.deselectRow(at: indexPath, animated: true)
         
         if indexPath.row == 1 {
-            // User clicked "Settings," show sub-menu items
-            subMenuItems = ["Language", "Theme"]
+            // User clicked "Settings," show or hide sub-menu items
+            isSubMenuVisible.toggle()
             tableView.reloadData()
         } else {
-            // Handle navigation to other pages (e.g., "Profile")
-            switch indexPath.row {
-            case 0:
-                // Navigate to Profile page
-                print("Profile")
-                break
-            case 1:
-                // Show subMenuItems = ["Language", "Theme"]
-                print("Settings")
-                break
-            default:
-                break
+            // Handle navigation or sub-menu item click
+            if isSubMenuVisible {
+                switch indexPath.row {
+                case 0:
+                    print("Language")
+                case 1:
+                    print("Theme")
+                default:
+                    break
+                }
+            } else {
+                switch indexPath.row {
+                case 0:
+                    print("Profile")
+                default:
+                    break
+                }
             }
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.row == 1 && subMenuItems.count > 0 {
-            return 50 // Adjust the height for sub-menu items
-        }
-        return 44 // Default cell height
+        return 44
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == 1 && subMenuItems.count > 0 {
-            cell.textLabel?.text = "Settings >"
-            cell.accessoryType = .disclosureIndicator
+        if indexPath.row == 1 {
+            cell.textLabel?.text = isSubMenuVisible ? "Settings" : "Settings"
+            cell.accessoryType = isSubMenuVisible ? .disclosureIndicator : .none
         }
     }
 }
+
