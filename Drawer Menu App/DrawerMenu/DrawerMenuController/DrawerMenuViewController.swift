@@ -114,15 +114,21 @@ class DrawerMenuViewController: UIViewController, UITableViewDataSource, UITable
         } else if selectedItem == "Settings" {
             // Toggle sub-menu visibility for "Settings"
             isSubMenuVisible[0].toggle()
+            isSubMenuVisible[1] = false
             tableView.reloadData()
         } else if selectedItem == "Contact" {
             // Toggle sub-menu visibility for "Contact"
             isSubMenuVisible[1].toggle()
+            isSubMenuVisible[0] = false
             tableView.reloadData()
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 44
+        if currentMenu[indexPath.row].hasPrefix("  ") {
+            return 44
+        }
+        return 45 // Adjust the height for main menu items
     }
 }
+
