@@ -3,12 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		0491520B2ACFDF9A00FC6D0B /* AllExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0491520A2ACFDF9A00FC6D0B /* AllExtensions.swift */; };
 		0491520D2AD00DBA00FC6D0B /* Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0491520C2AD00DBA00FC6D0B /* Backup.swift */; };
+		04983DDC2AD9377000211476 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 04983DDB2AD9377000211476 /* Alamofire */; };
+		04983DDF2AD9378C00211476 /* Attack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04983DDE2AD9378C00211476 /* Attack.swift */; };
 		CEC36DAB251F737F00336F8B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC36DAA251F737F00336F8B /* AppDelegate.swift */; };
 		CEC36DAD251F737F00336F8B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC36DAC251F737F00336F8B /* SceneDelegate.swift */; };
 		CEC36DAF251F737F00336F8B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC36DAE251F737F00336F8B /* ViewController.swift */; };
@@ -24,6 +26,7 @@
 /* Begin PBXFileReference section */
 		0491520A2ACFDF9A00FC6D0B /* AllExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllExtensions.swift; sourceTree = "<group>"; };
 		0491520C2AD00DBA00FC6D0B /* Backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backup.swift; sourceTree = "<group>"; };
+		04983DDE2AD9378C00211476 /* Attack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attack.swift; sourceTree = "<group>"; };
 		CEC36DA7251F737F00336F8B /* Drawer Menu App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Drawer Menu App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEC36DAA251F737F00336F8B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CEC36DAC251F737F00336F8B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -43,12 +46,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04983DDC2AD9377000211476 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		04983DDD2AD9377D00211476 /* Attack */ = {
+			isa = PBXGroup;
+			children = (
+				04983DDE2AD9378C00211476 /* Attack.swift */,
+			);
+			path = Attack;
+			sourceTree = "<group>";
+		};
 		CEC36D9E251F737F00336F8B = {
 			isa = PBXGroup;
 			children = (
@@ -68,6 +80,7 @@
 		CEC36DA9251F737F00336F8B /* Drawer Menu App */ = {
 			isa = PBXGroup;
 			children = (
+				04983DDD2AD9377D00211476 /* Attack */,
 				CEC36DD6251F7B2400336F8B /* DrawerMenu */,
 				CEC36DAA251F737F00336F8B /* AppDelegate.swift */,
 				CEC36DAC251F737F00336F8B /* SceneDelegate.swift */,
@@ -125,6 +138,9 @@
 			dependencies = (
 			);
 			name = "Drawer Menu App";
+			packageProductDependencies = (
+				04983DDB2AD9377000211476 /* Alamofire */,
+			);
 			productName = "Drawer Menu App";
 			productReference = CEC36DA7251F737F00336F8B /* Drawer Menu App.app */;
 			productType = "com.apple.product-type.application";
@@ -152,6 +168,9 @@
 				Base,
 			);
 			mainGroup = CEC36D9E251F737F00336F8B;
+			packageReferences = (
+				04983DDA2AD9377000211476 /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			productRefGroup = CEC36DA8251F737F00336F8B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -182,6 +201,7 @@
 				CEC36DAF251F737F00336F8B /* ViewController.swift in Sources */,
 				CEC36DAB251F737F00336F8B /* AppDelegate.swift in Sources */,
 				CEC36DDA251F7B6200336F8B /* DrawerMenuViewController.swift in Sources */,
+				04983DDF2AD9378C00211476 /* Attack.swift in Sources */,
 				CEC36DAD251F737F00336F8B /* SceneDelegate.swift in Sources */,
 				CEC36DE3251F7C8700336F8B /* DrawerPresentationController.swift in Sources */,
 				CEC36DE0251F7C0300336F8B /* DrawerTransitionManager.swift in Sources */,
@@ -389,6 +409,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		04983DDA2AD9377000211476 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		04983DDB2AD9377000211476 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 04983DDA2AD9377000211476 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CEC36D9F251F737F00336F8B /* Project object */;
 }
