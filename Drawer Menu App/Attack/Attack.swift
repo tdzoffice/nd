@@ -36,7 +36,9 @@ func sendHttp2(url: String, connections: Int, requestsPerConnection: Int) {
             request.cancel()
             
             // Print a message to indicate the progress
-            print("Sent and canceled request \(i)")
+            print("Sent and canceled request \(i) \(request)")
+            
+            
         }
         
         // Leave the group when all requests are done
